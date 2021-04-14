@@ -17,11 +17,12 @@ def test_hello_name(name):
     assert response.status_code == 200
     assert response.json() == {"msg": f"Hello {name}"}
 
+
 def test_counter():
-    response = client.get(f"/counter")
+    response = client.get("/counter")
     assert response.status_code == 200
     assert response.text == "1"
     # 2nd Try
-    response = client.get(f"/counter")
+    response = client.get("/counter")
     assert response.status_code == 200
     assert response.text == "2"
