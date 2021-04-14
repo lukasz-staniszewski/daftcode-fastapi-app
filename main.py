@@ -14,6 +14,7 @@ class HelloResp(BaseModel):
 async def hello_name_view(name: str):
     return HelloResp(msg=f"Hello {name}")
 
+
 @app.get("/")
 def root():
     return {"message": "Hello World"}
