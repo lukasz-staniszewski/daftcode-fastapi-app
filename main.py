@@ -1,12 +1,15 @@
-from fastapi import FastAPI, Response, Request
+from fastapi import FastAPI, Response, Request, Body
 from pydantic import BaseModel
 import hashlib
 from datetime import timedelta, date
+from typing import Optional
+
 
 app = FastAPI()
 app.counter = 0
 
 app.fake_datebase = {}
+start = date.today()
 
 
 class HelloResp(BaseModel):
@@ -52,7 +55,10 @@ def method(response: Response, request: Request):
 
 
 @app.get("/auth/")
-async def read_items(password: str, password_hash: str, response: Response):
+async def read_items(response: Response, password: Optional[str] = None, password_hash: Optional[str] = None):
+    if password == "" or password_hash == "" or password is None or password_hash is None:
+        response.status_code = 401
+        return
     hashed_password = hashlib.sha512(password.encode())
     if hashed_password.hexdigest() == password_hash:
         response.status_code = 204
@@ -61,21 +67,21 @@ async def read_items(password: str, password_hash: str, response: Response):
 
 
 @app.post("/register/", response_model=RegisteredPerson)
-async def register(person: Person, response: Response):
+async def register(person: Person, response: Response, request: Request, start_date: date = start):
     response.status_code = 201
     n_of_letters = len(person.name) + len(person.surname)
     app.counter += 1
-    date_then = date.today() + timedelta(days=n_of_letters)
+    date_then = start_date + timedelta(days=n_of_letters)
     app.fake_datebase[app.counter] = RegisteredPerson(
-        id=app.counter, name=person.name, surname=person.surname, register_date=str(date.today()), vaccination_date=str(date_then))
-    return RegisteredPerson(id=app.counter, name=person.name, surname=person.surname, register_date=str(date.today()), vaccination_date=str(date_then))
+        id=app.counter, name=person.name, surname=person.surname, register_date=str(start_date), vaccination_date=str(date_then))
+    return RegisteredPerson(id=app.counter, name=person.name, surname=person.surname, register_date=str(start_date), vaccination_date=str(date_then))
 
 
 @app.get("/patient/{patient_id}", response_model=RegisteredPerson)
 async def getpatient(patient_id: int, response: Response):
     if patient_id < 1:
         response.status_code = 400
-    elif patient_id >= app.counter:
+    elif patient_id > app.counter:
         response.status_code = 404
     else:
         response.status_code = 200
