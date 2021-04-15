@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response, Request, Body
+from fastapi import FastAPI, Response, Body, Request
 from pydantic import BaseModel
 import hashlib
 from datetime import timedelta, date
@@ -67,14 +67,17 @@ async def read_items(response: Response, password: Optional[str] = None, passwor
 
 
 @app.post("/register/", response_model=RegisteredPerson)
-async def register(person: Person, response: Response, request: Request, start_date: date = start):
+async def register(person: Person, response: Response, request: Request):
     response.status_code = 201
-    n_of_letters = len(person.name) + len(person.surname)
+    n_of_letters = 0
+    for letter in person.name+person.surname:
+        if letter.isalpha():
+            n_of_letters += 1
     app.counter += 1
-    date_then = start_date + timedelta(days=n_of_letters)
+    date_then = start + timedelta(days=n_of_letters)
     app.fake_datebase[app.counter] = RegisteredPerson(
-        id=app.counter, name=person.name, surname=person.surname, register_date=str(start_date), vaccination_date=str(date_then))
-    return RegisteredPerson(id=app.counter, name=person.name, surname=person.surname, register_date=str(start_date), vaccination_date=str(date_then))
+        id=app.counter, name=person.name, surname=person.surname, register_date=str(start), vaccination_date=str(date_then))
+    return RegisteredPerson(id=app.counter, name=person.name, surname=person.surname, register_date=str(start), vaccination_date=str(date_then))
 
 
 @app.get("/patient/{patient_id}", response_model=RegisteredPerson)
