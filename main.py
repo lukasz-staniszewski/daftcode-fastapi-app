@@ -71,7 +71,7 @@ async def register(person: Person, response: Response, request: Request):
     response.status_code = 201
     n_of_letters = 0
     for letter in person.name+person.surname:
-        if (65<=ord(letter)<=90) or (97<=ord(letter)<=122):
+        if letter.isalpha():
             n_of_letters+=1 
     app.counter += 1
     date_then = start + timedelta(days=n_of_letters)

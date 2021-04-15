@@ -89,10 +89,10 @@ def test_patient():
 def test_register():
     date_today = date.today()
     response = client.post(
-        "/register/", json={"name": "Lukasz", "surname": "Staniszewski"})
+        "/register/", json={"name": "Łukasz", "surname": "Staniszewski"})
     assert response.status_code == 201
     date_then = date_today + timedelta(days=18)
-    assert response.json() == {"id": 3, "name": "Lukasz", "surname": "Staniszewski",
+    assert response.json() == {"id": 3, "name": "Łukasz", "surname": "Staniszewski",
                                "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
 
     response = client.post(
