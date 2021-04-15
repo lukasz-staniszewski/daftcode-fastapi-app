@@ -54,6 +54,8 @@ def method(response: Response, request: Request):
 @app.get("/auth/")
 async def read_items(password: str, password_hash: str, response: Response):
     hashed_password = hashlib.sha512(password.encode())
+    if password == "":
+        response.status_code = 401
     if hashed_password.hexdigest() == password_hash:
         response.status_code = 204
     else:

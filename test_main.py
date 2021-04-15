@@ -50,7 +50,7 @@ def test_auth():
         "/auth/?password=haslo&password_hash=f34ad4b3ae1e2cf33092e2abb60dc0444781c15d0e2e9ecdb37e4b14176a0164027b05900e09fa0f61a1882e0b89fbfa5dcfcc9765dd2ca4377e2c794837e091")
     assert response.status_code == 401
 
-    response = client.get("/auth/?password&password_hash")
+    response = client.get("/auth/?password=""&password_hash=""")
     assert response.status_code == 401
 
 
