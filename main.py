@@ -72,7 +72,7 @@ async def register(person: Person, response: Response, request: Request):
     n_of_letters = 0
     for letter in person.name+person.surname:
         if letter.isalpha():
-            n_of_letters+=1 
+            n_of_letters += 1
     app.counter += 1
     date_then = start + timedelta(days=n_of_letters)
     app.fake_datebase[app.counter] = RegisteredPerson(
