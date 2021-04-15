@@ -53,17 +53,20 @@ def test_auth():
     response = client.get("/auth/?password=""&password_hash=""")
     assert response.status_code == 401
 
+    response = client.get("/auth")
+    assert response.status_code == 401
+
 
 def test_patient():
     date_today = date.today()
     response_post = client.post(
-        "/register/", json={"name": "Lukasz", "surname": "Staniszewski"})
+        "/register/", json={"name": "Jan", "surname": "Nowak"})
     assert response_post.status_code == 201
-    date_then = date_today + timedelta(days=18)
+    date_then = date_today + timedelta(days=8)
 
     response_get = client.get("/patient/1")
     assert response_get.status_code == 200
-    assert response_get.json() == {"id": 1, "name": "Lukasz", "surname": "Staniszewski",
+    assert response_get.json() == {"id": 1, "name": "Jan", "surname": "Nowak",
                                    "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
 
     response_get2 = client.get("/patient/2")
@@ -78,6 +81,7 @@ def test_patient():
 
     response_get4 = client.get("/patient/2")
     assert response_get4.status_code == 200
+    date_then = date_today + timedelta(days=18)
     assert response_get4.json() == {"id": 2, "name": "Lukasz", "surname": "Staniszewski",
                                     "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
 
