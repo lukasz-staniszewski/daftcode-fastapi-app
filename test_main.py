@@ -76,13 +76,13 @@ def test_patient():
     assert response_get3.status_code == 400
 
     response_post2 = client.post(
-        "/register/", json={"name": "Lukasz", "surname": "Staniszewski"})
+        "/register/", json={"name": "Lukasz", "surname": "1231231"})
     assert response_post2.status_code == 201
 
     response_get4 = client.get("/patient/2")
     assert response_get4.status_code == 200
-    date_then = date_today + timedelta(days=18)
-    assert response_get4.json() == {"id": 2, "name": "Lukasz", "surname": "Staniszewski",
+    date_then = date_today + timedelta(days=6)
+    assert response_get4.json() == {"id": 2, "name": "Lukasz", "surname": "1231231",
                                     "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
 
 

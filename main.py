@@ -1,9 +1,8 @@
-from fastapi import FastAPI, Response, Body#  Request
+from fastapi import FastAPI, Response, Body, Request
 from pydantic import BaseModel
 import hashlib
 from datetime import timedelta, date
 from typing import Optional
-from starlette.requests import Request
 
 
 app = FastAPI()
@@ -70,24 +69,12 @@ async def read_items(response: Response, password: Optional[str] = None, passwor
 @app.post("/register/", response_model=RegisteredPerson)
 async def register(person: Person, response: Response, request: Request):
     response.status_code = 201
-    n_of_letters = len(person.name) + len(person.surname)
+    n_of_letters = 0
+    for letter in person.name+person.surname:
+        if (65<=ord(letter)<=90) or (97<=ord(letter)<=122):
+            n_of_letters+=1 
     app.counter += 1
     date_then = start + timedelta(days=n_of_letters)
-    print(request.url)
-    print(request.method)
-    print(request.url.path)
-    print(request.url.scheme)
-    print(request.headers['content-type'])
-    print(request.query_params)
-    print(request.query_params.keys())
-    print(request.path_params)
-    print(request.path_params.keys())
-    print(await request.body())
-    print(await request.form())
-    print(await request.json())
-    # print(request.state.time_started)
-    print(request.state)
-
     app.fake_datebase[app.counter] = RegisteredPerson(
         id=app.counter, name=person.name, surname=person.surname, register_date=str(start), vaccination_date=str(date_then))
     return RegisteredPerson(id=app.counter, name=person.name, surname=person.surname, register_date=str(start), vaccination_date=str(date_then))
