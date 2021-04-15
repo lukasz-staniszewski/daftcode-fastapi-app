@@ -66,7 +66,8 @@ async def register(person: Person, response: Response):
     n_of_letters = len(person.name) + len(person.surname)
     app.counter += 1
     date_then = date.today() + timedelta(days=n_of_letters)
-    app.fake_datebase[app.counter] = RegisteredPerson(id=app.counter, name=person.name, surname=person.surname, register_date=str(date.today()), vaccination_date=str(date_then))
+    app.fake_datebase[app.counter] = RegisteredPerson(
+        id=app.counter, name=person.name, surname=person.surname, register_date=str(date.today()), vaccination_date=str(date_then))
     return RegisteredPerson(id=app.counter, name=person.name, surname=person.surname, register_date=str(date.today()), vaccination_date=str(date_then))
 
 
