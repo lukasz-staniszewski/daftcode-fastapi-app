@@ -77,7 +77,7 @@ async def register(person: Person, response: Response):
 async def getpatient(patient_id: int, response: Response):
     if patient_id < 1:
         response.status_code = 400
-    elif patient_id >= app.counter:
+    elif patient_id > app.counter:
         response.status_code = 404
     else:
         response.status_code = 200

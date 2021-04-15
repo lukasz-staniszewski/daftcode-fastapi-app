@@ -54,37 +54,6 @@ def test_auth():
     assert response.status_code == 401
 
 
-def test_register():
-    date_today = date.today()
-    response = client.post(
-        "/register/", json={"name": "Lukasz", "surname": "Staniszewski"})
-    assert response.status_code == 201
-    date_then = date_today + timedelta(days=18)
-    assert response.json() == {"id": 1, "name": "Lukasz", "surname": "Staniszewski",
-                               "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
-
-    response = client.post(
-        "/register/", json={"name": "Marcin", "surname": "Najman"})
-    assert response.status_code == 201
-    date_then = date_today + timedelta(days=12)
-    assert response.json() == {"id": 2, "name": "Marcin", "surname": "Najman",
-                               "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
-
-    response = client.post(
-        "/register/", json={"name": "Krzysztof", "surname": "Kolumb"})
-    assert response.status_code == 201
-    date_then = date_today + timedelta(days=15)
-    assert response.json() == {"id": 3, "name": "Krzysztof", "surname": "Kolumb",
-                               "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
-
-    response = client.post(
-        "/register/", json={"name": "Krzysztof", "surname": "Kolumb"})
-    assert response.status_code == 201
-    date_then = date_today + timedelta(days=15)
-    assert response.json() != {"id": 5, "name": "Krzysztof", "surname": "Kolumb",
-                               "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
-
-
 def test_patient():
     date_today = date.today()
     response_post = client.post(
@@ -97,8 +66,48 @@ def test_patient():
     assert response_get.json() == {"id": 1, "name": "Lukasz", "surname": "Staniszewski",
                                    "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
 
-    response_get2 = client.get("/patient/8")
+    response_get2 = client.get("/patient/2")
     assert response_get2.status_code == 404
 
     response_get3 = client.get("patient/-1")
     assert response_get3.status_code == 400
+
+    response_post2 = client.post(
+        "/register/", json={"name": "Lukasz", "surname": "Staniszewski"})
+    assert response_post2.status_code == 201
+
+    response_get4 = client.get("/patient/2")
+    assert response_get4.status_code == 200
+    assert response_get4.json() == {"id": 2, "name": "Lukasz", "surname": "Staniszewski",
+                                    "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
+
+
+def test_register():
+    date_today = date.today()
+    response = client.post(
+        "/register/", json={"name": "Lukasz", "surname": "Staniszewski"})
+    assert response.status_code == 201
+    date_then = date_today + timedelta(days=18)
+    assert response.json() == {"id": 3, "name": "Lukasz", "surname": "Staniszewski",
+                               "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
+
+    response = client.post(
+        "/register/", json={"name": "Marcin", "surname": "Najman"})
+    assert response.status_code == 201
+    date_then = date_today + timedelta(days=12)
+    assert response.json() == {"id": 4, "name": "Marcin", "surname": "Najman",
+                               "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
+
+    response = client.post(
+        "/register/", json={"name": "Krzysztof", "surname": "Kolumb"})
+    assert response.status_code == 201
+    date_then = date_today + timedelta(days=15)
+    assert response.json() == {"id": 5, "name": "Krzysztof", "surname": "Kolumb",
+                               "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
+
+    response = client.post(
+        "/register/", json={"name": "Krzysztof", "surname": "Kolumb"})
+    assert response.status_code == 201
+    date_then = date_today + timedelta(days=15)
+    assert response.json() != {"id": 7, "name": "Krzysztof", "surname": "Kolumb",
+                               "register_date": f"{date_today}", "vaccination_date": f"{date_then}"}
