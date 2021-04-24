@@ -52,7 +52,9 @@ def add_instance_method(ClassName):
             return to_dec(*args, **kwargs)
         # assigning method to class before executing
         setattr(ClassName, to_dec.__name__, wrapper)
-        return to_dec  # if I return to_dec, I still can use it without decorator
+        # now when function to decorate is returned, there is possibility
+        # in code to run to_dec() without need to add 'ClassName().' before
+        return to_dec
     return real_dec
 
 
