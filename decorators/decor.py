@@ -50,8 +50,9 @@ def add_instance_method(ClassName):
     def real_dec(to_dec):
         def wrapper(self, *args, **kwargs):
             return to_dec(*args, **kwargs)
+        # assigning method to class before executing
         setattr(ClassName, to_dec.__name__, wrapper)
-        return to_dec
+        return to_dec  # if I return to_dec, I still can use it without decorator
     return real_dec
 
 
@@ -60,6 +61,7 @@ def add_class_method(ClassName):
     def real_dec(to_dec):
         def wrapper(*args, **kwargs):
             return to_dec(*args, **kwargs)
+        # assigning method to class before executing
         setattr(ClassName, to_dec.__name__, wrapper)
         return wrapper
     return real_dec
