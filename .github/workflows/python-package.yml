@@ -43,3 +43,7 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+    - name: Test decorators with unittest
+      run: |
+        cd decorators
+        python -m unittest
