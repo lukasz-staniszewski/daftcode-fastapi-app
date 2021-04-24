@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response, Body, Request
+from fastapi import FastAPI, Response, Request
 from pydantic import BaseModel
 import hashlib
 from datetime import timedelta, date
@@ -70,7 +70,7 @@ async def read_items(response: Response, password: Optional[str] = None, passwor
 async def register(person: Person, response: Response, request: Request):
     response.status_code = 201
     n_of_letters = 0
-    for letter in person.name+person.surname:
+    for letter in person.name + person.surname:
         if letter.isalpha():
             n_of_letters += 1
     app.counter += 1
