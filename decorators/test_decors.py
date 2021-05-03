@@ -1,5 +1,11 @@
 import unittest
-from decor import greetings, is_palindrome, format_output, add_instance_method, add_class_method
+from decor import (
+    greetings,
+    is_palindrome,
+    format_output,
+    add_instance_method,
+    add_class_method,
+)
 
 
 class ExampleClass:
@@ -60,8 +66,10 @@ class ExampleTest(unittest.TestCase):
 
     def test_formatting(self):
         self.assertEqual(self.show_dict(), {"first_name": "Jan"})
-        self.assertEqual(self.first_func(), {
-                         "first_name__last_name": "Jan Kowalski", "city": "Warszawa"})
+        self.assertEqual(
+            self.first_func(),
+            {"first_name__last_name": "Jan Kowalski", "city": "Warszawa"},
+        )
         self.assertRaises(ValueError, self.second_func)
 
 
