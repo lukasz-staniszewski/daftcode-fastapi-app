@@ -265,7 +265,7 @@ def welcome(response: Response, token: str = Query(None), format: str = Query(No
     check_token(token, app.access_token_token)
     if format is not None:
         if format == "json":
-            return JSONResponse(content={"message": welcome}, status_code=status.HTTP_200_OK)
+            return JSONResponse(content={"message": "Welcome!"}, status_code=status.HTTP_200_OK)
         elif format == "html":
             return HTMLResponse(content="<h1>Welcome!</h1>", status_code=status.HTTP_200_OK)
     return PlainTextResponse(content="Welcome!", status_code=status.HTTP_200_OK)
