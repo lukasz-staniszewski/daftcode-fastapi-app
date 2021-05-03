@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from hashlib import sha256, sha512
 from datetime import timedelta, date
 from typing import Optional, List
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi_mako import FastAPIMako
 from routers.router import router
@@ -199,3 +199,31 @@ def secured_data(*, response: Response, session_token: str = Cookie(None)):
 @app.get('/hello', response_class=HTMLResponse)
 def hello():
     return f"<h1>Hello! Today date is {start}</h1>"
+
+
+correct_login = "4dm1n"
+correct_passwd = "NotSoSecurePa$$"
+app.access_token_session = None
+app.access_token_token = None
+
+
+@app.post('/login_session')
+def login(user: str, password: str, response: Response):
+    if user == correct_login and password == correct_passwd:
+        response.status_code = 201
+        session_token = sha512(f"{user}{password}something_completely_random".encode()).hexdigest()
+        app.access_token_session = session_token
+        response.set_cookie(key="session_token", value=session_token)
+    else:
+        raise HTTPException(status_code=401, detail="Unauthorised")
+
+
+@app.post('/login_token', response_class=JSONResponse)
+def login(user: str, password: str, response: Response):
+    if user == correct_login and password == correct_passwd:
+        response.status_code = 201
+        token_value = sha512("something_more_completely_random".encode()).hexdigest()
+        app.access_token_token = token_value
+        return {"token": token_value}
+    else:
+        raise HTTPException(status_code=401, detail="Unauthorised")
