@@ -218,25 +218,22 @@ def check_usrnm_passwd(credentials):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorised - incorrect login or password!",
-            headesr={"WWW-Authenticate": "Basic"},
+            headers={"WWW-Authenticate": "Basic"},
         )
-        return False
-    return True
 
 
 @app.post('/login_session')
 def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
-    if check_usrnm_passwd(credentials):
-        response.status_code = 201
-        session_token = sha512("something_completely_random".encode()).hexdigest()
-        app.access_token_session = session_token
-        response.set_cookie(key="session_token", value=session_token)
+    check_usrnm_passwd(credentials)
+    response.status_code = 201
+    session_token = sha512("something_completely_random".encode()).hexdigest()
+    app.access_token_session = session_token
+    response.set_cookie(key="session_token", value=session_token)
 
 
 @app.post('/login_token', response_class=JSONResponse)
 def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
-    if check_usrnm_passwd(credentials):
-        response.status_code = 201
-        token_value = sha512("something_more_completely_random".encode()).hexdigest()
-        app.access_token_token = token_value
-        return {"token": token_value}
+    response.status_code = 201
+    token_value = sha512("something_more_completely_random".encode()).hexdigest()
+    app.access_token_token = token_value
+    return {"token": token_value}
