@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from hashlib import sha256, sha512
 from datetime import timedelta, date
 from typing import Optional, List
-from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi_mako import FastAPIMako
 from routers.router import router
@@ -269,3 +269,27 @@ def welcome(response: Response, token: str = Query(None), format: str = Query(No
         elif format == "html":
             return HTMLResponse(content="<h1>Welcome!</h1>", status_code=status.HTTP_200_OK)
     return PlainTextResponse(content="Welcome!", status_code=status.HTTP_200_OK)
+
+
+@app.delete('/logout_session')
+def logout(response: Response, format: str = Query(None), session_token: str = Cookie(None)):
+    check_token(session_token, app.access_token_session)
+    app.access_token_session = None
+    return RedirectResponse("/logged_out?&format={}".format(format), status_code=status.HTTP_303_SEE_OTHER)
+
+
+@app.delete('/logout_token')
+def logout(response: Response, token: str = Query(None), format: str = Query(None)):
+    check_token(token, app.access_token_token)
+    app.access_token_token = None
+    return RedirectResponse("/logged_out?&format={}".format(format), status_code=status.HTTP_303_SEE_OTHER)
+
+
+@app.get('/logged_out')
+def logout(response: Response, format: str = Query(None)):
+    if format is not None:
+        if format == "json":
+            return JSONResponse(content={"message": "Logged out!"}, status_code=status.HTTP_200_OK)
+        elif format == "html":
+            return HTMLResponse(content="<h1>Logged out!</h1>", status_code=status.HTTP_200_OK)
+    return PlainTextResponse(content="Logged out!", status_code=status.HTTP_200_OK)
