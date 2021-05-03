@@ -1,15 +1,34 @@
-from fastapi import FastAPI, Response, Request
+from fastapi import FastAPI, Response, Request, Query, HTTPException, Cookie
 from pydantic import BaseModel
-import hashlib
+from hashlib import sha256, sha512
 from datetime import timedelta, date
-from typing import Optional
-
+from typing import Optional, List
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi_mako import FastAPIMako
+from routers.router import router
 
 app = FastAPI()
 app.counter = 0
-
+app.__name__ = "templates"
 app.fake_datebase = {}
 start = date.today()
+
+mako = FastAPIMako(app)
+templates = Jinja2Templates(directory="templates")
+
+app.include_router(router, prefix="/v1", tags=["api_v1"])
+app.include_router(router, tags=["default"])
+
+objects = {
+    1: {"field_a": "a", "field_b": "b"},
+    2: {"field_a": "a", "field_b": "b"},
+    3: {"field_a": "a", "field_b": "b"},
+    # .... #
+}
+
+app.secret_key = "very constatn and random secret, best 64+ characters"
+app.access_tokens = []
 
 
 class HelloResp(BaseModel):
@@ -59,7 +78,7 @@ async def read_items(response: Response, password: Optional[str] = None, passwor
     if password == "" or password_hash == "" or password is None or password_hash is None:
         response.status_code = 401
         return
-    hashed_password = hashlib.sha512(password.encode())
+    hashed_password = sha512(password.encode())
     if hashed_password.hexdigest() == password_hash:
         response.status_code = 204
     else:
@@ -89,3 +108,94 @@ async def getpatient(patient_id: int, response: Response):
     else:
         response.status_code = 200
         return app.fake_datebase[patient_id]
+
+
+@app.get("/request_query_string_discovery/")
+def get_params(u: str = Query("default"), q: List[str] = Query(None)):
+    query_items = {"q": q, "u": u}
+    return query_items
+
+
+@app.get("/static", response_class=HTMLResponse)
+def index_static():
+    return """
+    <html>
+        <head>
+            <title>Some HTML in here</title>
+        </head>
+        <body>
+            <h1>Look ma! HTML!</h1>
+        </body>
+    </html>
+    """
+
+
+@app.get("/jinja")
+def read_item(request: Request):
+    return templates.TemplateResponse("index.html.j2", {
+        "request": request, "my_string": "Wheeeee!", "my_list": [0, 1, 2, 3, 4, 5]})
+
+
+@app.get("/mako", response_class=HTMLResponse)
+@mako.template("index_mako.html")
+def index_mako(request: Request):
+    setattr(request, "mako", "test")
+    return {"my_string": "Wheeeee!", "my_list": [0, 1, 2, 3, 4, 5]}
+
+
+@app.get("/simple_path_tmpl/{sample_variable}/{sample_2}")
+def simple_path_tmpl(sample_variable: str, sample_2: str):
+    print(f"{sample_variable=}")
+    print(type(sample_variable))
+    return {"sample_variable": sample_variable, "sample_2": sample_2}
+
+
+@app.get("/files/{file_path:path}/terminator/{x1}")
+def read_file(file_path: str, x1: str):
+    return {"file_path": file_path, "x1": x1}
+
+
+@app.get("/simple_path_tmpl/{sample_variable}")
+def simple_path_tmpl1(sample_variable: str):
+    print(f"{sample_variable=}")
+    print(type(sample_variable))
+    return {"sample_variable": sample_variable}
+
+
+@app.get("/simple_path_tmpl/{obj_id}/{field}")
+def simple_path_tmpl2(obj_id: int, field: str):
+    print(f"{obj_id=}")
+    print(f"{field=}")
+    return {"field": objects.get(obj_id, {}).get(field)}
+
+
+@app.get("/items/")
+def read_items(*, ads_id: str = Cookie(None)):
+    return {"ads_id": ads_id}
+
+
+@app.post("/cookie-and-object/")
+def create_cookie(response: Response):
+    response.set_cookie(key="fakesession", value="fake-cookie-session-value")
+    return {"message": "Come to the dark side, we have cookies"}
+
+
+@app.post("/login/")
+def login(user: str, password: str, response: Response):
+    session_token = sha256(f"{user}{password}{app.secret_key}".encode()).hexdigest()
+    app.access_tokens.append(session_token)
+    response.set_cookie(key="session_token", value=session_token)
+    return{"message": "Welcome"}
+
+
+@app.get("/data/")
+def secured_data(*, response: Response, session_token: str = Cookie(None)):
+    if session_token not in app.access_tokens:
+        raise HTTPException(status_code=403, detail="Unauthorised")
+    else:
+        return {"message": "Secure content!!!"}
+
+
+@app.get('/hello', response_class=HTMLResponse)
+def hello():
+    return f"<h1>Hello! Today date is {start}</h1>"
