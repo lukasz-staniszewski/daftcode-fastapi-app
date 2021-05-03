@@ -10,6 +10,8 @@ from routers.router import router
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
 
+MAX_QUEUE_SIZE = 3
+
 app = FastAPI()
 app.counter = 0
 app.__name__ = "templates"
@@ -207,8 +209,8 @@ def hello():
 
 correct_login = "4dm1n"
 correct_passwd = "NotSoSecurePa$$"
-app.access_token_session = None
-app.access_token_token = None
+app.access_token_session = []
+app.access_token_token = []
 
 
 def check_usrnm_passwd(credentials):
@@ -226,8 +228,9 @@ def check_usrnm_passwd(credentials):
 def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
     check_usrnm_passwd(credentials)
     response.status_code = 201
-    session_token = sha512("something_completely_random".encode()).hexdigest()
-    app.access_token_session = session_token
+    app.counter += 1
+    session_token = sha512(f"something_completely_random{app.counter}".encode()).hexdigest()
+    add_session_token(session_token, app.access_token_session)
     response.set_cookie(key="session_token", value=session_token)
 
 
@@ -235,18 +238,29 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
 def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
     check_usrnm_passwd(credentials)
     response.status_code = 201
-    token_value = sha512("something_more_completely_random".encode()).hexdigest()
-    app.access_token_token = token_value
+    app.counter += 1
+    token_value = sha512(f"something_more_completely_random{app.counter}".encode()).hexdigest()
+    add_session_token(token_value, app.access_token_token)
     return {"token": token_value}
 
 
 def check_token(token: str, with_what: str):
-    if token is None or token != with_what:
+    if token is None or token not in with_what:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorised - wrong session token",
             headers={"WWW-Authenticate": "Basic"},
         )
+
+
+def add_session_token(session_token: str, where):
+    if len(where) == MAX_QUEUE_SIZE:
+        del where[0]
+    where.append(session_token)
+
+
+def remove_session_token(session_token: str, where):
+    where.remove(session_token)
 
 
 @app.get('/welcome_session')
@@ -274,14 +288,14 @@ def welcome(response: Response, token: str = Query(None), format: str = Query(No
 @app.delete('/logout_session')
 def logout(response: Response, format: str = Query(None), session_token: str = Cookie(None)):
     check_token(session_token, app.access_token_session)
-    app.access_token_session = None
+    remove_session_token(session_token, app.access_token_session)
     return RedirectResponse("/logged_out?&format={}".format(format), status_code=status.HTTP_303_SEE_OTHER)
 
 
 @app.delete('/logout_token')
 def logout(response: Response, token: str = Query(None), format: str = Query(None)):
     check_token(token, app.access_token_token)
-    app.access_token_token = None
+    remove_session_token(token, app.access_token_token)
     return RedirectResponse("/logged_out?&format={}".format(format), status_code=status.HTTP_303_SEE_OTHER)
 
 
