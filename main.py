@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from hashlib import sha256, sha512
 from datetime import timedelta, date
 from typing import Optional, List
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from fastapi.templating import Jinja2Templates
 from fastapi_mako import FastAPIMako
 from routers.router import router
@@ -238,3 +238,34 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
     token_value = sha512("something_more_completely_random".encode()).hexdigest()
     app.access_token_token = token_value
     return {"token": token_value}
+
+
+def check_token(token: str, with_what: str):
+    if token is None or token != with_what:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorised - wrong session token",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+
+@app.get('/welcome_session')
+def welcome(response: Response, token: str = Query(None), format: str = Query(None), session_token: str = Cookie(None)):
+    check_token(session_token, app.access_token_session)
+    if format is not None:
+        if format == "json":
+            return JSONResponse(content={"message": "Welcome!"}, status_code=status.HTTP_200_OK)
+        elif format == "html":
+            return HTMLResponse(content="<h1>Welcome!</h1>", status_code=status.HTTP_200_OK)
+    return PlainTextResponse(content="Welcome!", status_code=status.HTTP_200_OK)
+
+
+@app.get('/welcome_token')
+def welcome(response: Response, token: str = Query(None), format: str = Query(None)):
+    check_token(token, app.access_token_token)
+    if format is not None:
+        if format == "json":
+            return JSONResponse(content={"message": welcome}, status_code=status.HTTP_200_OK)
+        elif format == "html":
+            return HTMLResponse(content="<h1>Welcome!</h1>", status_code=status.HTTP_200_OK)
+    return PlainTextResponse(content="Welcome!", status_code=status.HTTP_200_OK)
