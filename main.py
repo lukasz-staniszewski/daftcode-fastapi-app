@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response, Request, Query, HTTPException, Cookie
+from fastapi import FastAPI, Response, Request, Query, HTTPException, Cookie, Depends, status
 from pydantic import BaseModel
 from hashlib import sha256, sha512
 from datetime import timedelta, date
@@ -7,6 +7,8 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi_mako import FastAPIMako
 from routers.router import router
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+import secrets
 
 app = FastAPI()
 app.counter = 0
@@ -29,6 +31,8 @@ objects = {
 
 app.secret_key = "very constatn and random secret, best 64+ characters"
 app.access_tokens = []
+
+security = HTTPBasic()
 
 
 class HelloResp(BaseModel):
@@ -207,23 +211,30 @@ app.access_token_session = None
 app.access_token_token = None
 
 
+def check_usrnm_passwd(credentials):
+    correct_usrnm = secrets.compare_digest(credentials.username, correct_login)
+    correct_password = secrets.compare_digest(credentials.password, correct_passwd)
+    if not (correct_usrnm, correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorised - incorrect login or password!",
+            headesr={"WWW-Authenticate": "Basic"},
+        )
+
+
 @app.post('/login_session')
-def login(user: str, password: str, response: Response):
-    if user == correct_login and password == correct_passwd:
-        response.status_code = 201
-        session_token = sha512(f"{user}{password}something_completely_random".encode()).hexdigest()
-        app.access_token_session = session_token
-        response.set_cookie(key="session_token", value=session_token)
-    else:
-        raise HTTPException(status_code=401, detail="Unauthorised")
+def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+    check_usrnm_passwd(credentials)
+    response.status_code = 201
+    session_token = sha512("something_completely_random".encode()).hexdigest()
+    app.access_token_session = session_token
+    response.set_cookie(key="session_token", value=session_token)
 
 
 @app.post('/login_token', response_class=JSONResponse)
-def login(user: str, password: str, response: Response):
-    if user == correct_login and password == correct_passwd:
-        response.status_code = 201
-        token_value = sha512("something_more_completely_random".encode()).hexdigest()
-        app.access_token_token = token_value
-        return {"token": token_value}
-    else:
-        raise HTTPException(status_code=401, detail="Unauthorised")
+def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+    check_usrnm_passwd(credentials)
+    response.status_code = 201
+    token_value = sha512("something_more_completely_random".encode()).hexdigest()
+    app.access_token_token = token_value
+    return {"token": token_value}
