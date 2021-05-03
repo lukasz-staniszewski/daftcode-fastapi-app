@@ -233,6 +233,7 @@ def login(response: Response, credentials: HTTPBasicCredentials = Depends(securi
 
 @app.post('/login_token', response_class=JSONResponse)
 def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+    check_usrnm_passwd(credentials)
     response.status_code = 201
     token_value = sha512("something_more_completely_random".encode()).hexdigest()
     app.access_token_token = token_value
