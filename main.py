@@ -1,9 +1,23 @@
-from fastapi import FastAPI, Response, Request, Query, HTTPException, Cookie, Depends, status
+from fastapi import (
+    FastAPI,
+    Response,
+    Request,
+    Query,
+    HTTPException,
+    Cookie,
+    Depends,
+    status,
+)
 from pydantic import BaseModel
 from hashlib import sha256, sha512
 from datetime import timedelta, date
 from typing import Optional, List
-from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse
+from fastapi.responses import (
+    HTMLResponse,
+    JSONResponse,
+    PlainTextResponse,
+    RedirectResponse,
+)
 from fastapi.templating import Jinja2Templates
 from fastapi_mako import FastAPIMako
 from routers.router import router
@@ -64,7 +78,7 @@ def root():
     return {"message": "Hello world!"}
 
 
-@app.get('/counter')
+@app.get("/counter")
 def counter():
     app.counter += 1
     return app.counter
@@ -80,8 +94,17 @@ def method(response: Response, request: Request):
 
 
 @app.get("/auth/")
-async def read_items(response: Response, password: Optional[str] = None, password_hash: Optional[str] = None):
-    if password == "" or password_hash == "" or password is None or password_hash is None:
+async def read_items_auth(
+    response: Response,
+    password: Optional[str] = None,
+    password_hash: Optional[str] = None,
+):
+    if (
+        password == ""
+        or password_hash == ""
+        or password is None
+        or password_hash is None
+    ):
         response.status_code = 401
         return
     hashed_password = sha512(password.encode())
@@ -101,8 +124,19 @@ async def register(person: Person, response: Response, request: Request):
     app.counter += 1
     date_then = start + timedelta(days=n_of_letters)
     app.fake_datebase[app.counter] = RegisteredPerson(
-        id=app.counter, name=person.name, surname=person.surname, register_date=str(start), vaccination_date=str(date_then))
-    return RegisteredPerson(id=app.counter, name=person.name, surname=person.surname, register_date=str(start), vaccination_date=str(date_then))
+        id=app.counter,
+        name=person.name,
+        surname=person.surname,
+        register_date=str(start),
+        vaccination_date=str(date_then),
+    )
+    return RegisteredPerson(
+        id=app.counter,
+        name=person.name,
+        surname=person.surname,
+        register_date=str(start),
+        vaccination_date=str(date_then),
+    )
 
 
 @app.get("/patient/{patient_id}", response_model=RegisteredPerson)
@@ -137,9 +171,11 @@ def index_static():
 
 
 @app.get("/jinja")
-def read_item(request: Request):
-    return templates.TemplateResponse("index.html.j2", {
-        "request": request, "my_string": "Wheeeee!", "my_list": [0, 1, 2, 3, 4, 5]})
+def read_item_jinja(request: Request):
+    return templates.TemplateResponse(
+        "index.html.j2",
+        {"request": request, "my_string": "Wheeeee!", "my_list": [0, 1, 2, 3, 4, 5]},
+    )
 
 
 @app.get("/mako", response_class=HTMLResponse)
@@ -191,7 +227,7 @@ def login(user: str, password: str, response: Response):
     session_token = sha256(f"{user}{password}{app.secret_key}".encode()).hexdigest()
     app.access_tokens.append(session_token)
     response.set_cookie(key="session_token", value=session_token)
-    return{"message": "Welcome"}
+    return {"message": "Welcome"}
 
 
 @app.get("/data/")
@@ -202,7 +238,7 @@ def secured_data(*, response: Response, session_token: str = Cookie(None)):
         return {"message": "Secure content!!!"}
 
 
-@app.get('/hello', response_class=HTMLResponse)
+@app.get("/hello", response_class=HTMLResponse)
 def hello():
     return f"<h1>Hello! Today date is {start}</h1>"
 
@@ -224,22 +260,30 @@ def check_usrnm_passwd(credentials):
         )
 
 
-@app.post('/login_session')
-def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+@app.post("/login_session")
+def login_session(
+    response: Response, credentials: HTTPBasicCredentials = Depends(security)
+):
     check_usrnm_passwd(credentials)
     response.status_code = 201
     app.counter += 1
-    session_token = sha512(f"something_completely_random{app.counter}".encode()).hexdigest()
+    session_token = sha512(
+        f"something_completely_random{app.counter}".encode()
+    ).hexdigest()
     add_session_token(session_token, app.access_token_session)
     response.set_cookie(key="session_token", value=session_token)
 
 
-@app.post('/login_token', response_class=JSONResponse)
-def login(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+@app.post("/login_token", response_class=JSONResponse)
+def login_token(
+    response: Response, credentials: HTTPBasicCredentials = Depends(security)
+):
     check_usrnm_passwd(credentials)
     response.status_code = 201
     app.counter += 1
-    token_value = sha512(f"something_more_completely_random{app.counter}".encode()).hexdigest()
+    token_value = sha512(
+        f"something_more_completely_random{app.counter}".encode()
+    ).hexdigest()
     add_session_token(token_value, app.access_token_token)
     return {"token": token_value}
 
@@ -263,47 +307,74 @@ def remove_session_token(session_token: str, where):
     where.remove(session_token)
 
 
-@app.get('/welcome_session')
-def welcome(response: Response, token: str = Query(None), format: str = Query(None), session_token: str = Cookie(None)):
+@app.get("/welcome_session")
+def welcome_session(
+    response: Response,
+    token: str = Query(None),
+    format: str = Query(None),
+    session_token: str = Cookie(None),
+):
     check_token(session_token, app.access_token_session)
     if format is not None:
         if format == "json":
-            return JSONResponse(content={"message": "Welcome!"}, status_code=status.HTTP_200_OK)
+            return JSONResponse(
+                content={"message": "Welcome!"}, status_code=status.HTTP_200_OK
+            )
         elif format == "html":
-            return HTMLResponse(content="<h1>Welcome!</h1>", status_code=status.HTTP_200_OK)
+            return HTMLResponse(
+                content="<h1>Welcome!</h1>", status_code=status.HTTP_200_OK
+            )
     return PlainTextResponse(content="Welcome!", status_code=status.HTTP_200_OK)
 
 
-@app.get('/welcome_token')
-def welcome(response: Response, token: str = Query(None), format: str = Query(None)):
+@app.get("/welcome_token")
+def welcome_token(
+    response: Response, token: str = Query(None), format: str = Query(None)
+):
     check_token(token, app.access_token_token)
     if format is not None:
         if format == "json":
-            return JSONResponse(content={"message": "Welcome!"}, status_code=status.HTTP_200_OK)
+            return JSONResponse(
+                content={"message": "Welcome!"}, status_code=status.HTTP_200_OK
+            )
         elif format == "html":
-            return HTMLResponse(content="<h1>Welcome!</h1>", status_code=status.HTTP_200_OK)
+            return HTMLResponse(
+                content="<h1>Welcome!</h1>", status_code=status.HTTP_200_OK
+            )
     return PlainTextResponse(content="Welcome!", status_code=status.HTTP_200_OK)
 
 
-@app.delete('/logout_session')
-def logout(response: Response, format: str = Query(None), session_token: str = Cookie(None)):
+@app.delete("/logout_session")
+def logout_session(
+    response: Response, format: str = Query(None), session_token: str = Cookie(None)
+):
     check_token(session_token, app.access_token_session)
     remove_session_token(session_token, app.access_token_session)
-    return RedirectResponse("/logged_out?&format={}".format(format), status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(
+        "/logged_out?&format={}".format(format), status_code=status.HTTP_303_SEE_OTHER
+    )
 
 
-@app.delete('/logout_token')
-def logout(response: Response, token: str = Query(None), format: str = Query(None)):
+@app.delete("/logout_token")
+def logout_token(
+    response: Response, token: str = Query(None), format: str = Query(None)
+):
     check_token(token, app.access_token_token)
     remove_session_token(token, app.access_token_token)
-    return RedirectResponse("/logged_out?&format={}".format(format), status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(
+        "/logged_out?&format={}".format(format), status_code=status.HTTP_303_SEE_OTHER
+    )
 
 
-@app.get('/logged_out')
-def logout(response: Response, format: str = Query(None)):
+@app.get("/logged_out")
+def full_logout(response: Response, format: str = Query(None)):
     if format is not None:
         if format == "json":
-            return JSONResponse(content={"message": "Logged out!"}, status_code=status.HTTP_200_OK)
+            return JSONResponse(
+                content={"message": "Logged out!"}, status_code=status.HTTP_200_OK
+            )
         elif format == "html":
-            return HTMLResponse(content="<h1>Logged out!</h1>", status_code=status.HTTP_200_OK)
+            return HTMLResponse(
+                content="<h1>Logged out!</h1>", status_code=status.HTTP_200_OK
+            )
     return PlainTextResponse(content="Logged out!", status_code=status.HTTP_200_OK)
