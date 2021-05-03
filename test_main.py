@@ -9,7 +9,7 @@ client = TestClient(app)
 def test_read_main():
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Hello world!"}
+    assert response.json() == [{"name": "Item Foo"}, {"name": "item Bar"}]
 
 
 @pytest.mark.parametrize("name", ["Zenek", "Marek", "Alojzy Niezdąży"])
