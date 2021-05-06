@@ -14,7 +14,7 @@ class Shipper(BaseModel):
 dbrouter = APIRouter()
 dbrouter.__name__ = "DataBase app!"
 templates = Jinja2Templates(directory="templates")
-db_path = 'db\\northwind.db'
+db_path = 'northwind.db'
 
 @dbrouter.get("/", response_class=HTMLResponse)
 def welcome_jinja(request: Request):
