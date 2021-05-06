@@ -21,6 +21,7 @@ from fastapi.responses import (
 from fastapi.templating import Jinja2Templates
 from fastapi_mako import FastAPIMako
 from routers.router import router
+from routers.dbrouter import dbrouter
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
 
@@ -36,7 +37,7 @@ mako = FastAPIMako(app)
 templates = Jinja2Templates(directory="templates")
 
 app.include_router(router, prefix="/v1", tags=["api_v1"])
-app.include_router(router, tags=["default"])
+app.include_router(dbrouter, tags=["default"])
 
 objects = {
     1: {"field_a": "a", "field_b": "b"},
@@ -378,3 +379,5 @@ def full_logout(response: Response, format: str = Query(None)):
                 content="<h1>Logged out!</h1>", status_code=status.HTTP_200_OK
             )
     return PlainTextResponse(content="Logged out!", status_code=status.HTTP_200_OK)
+
+
