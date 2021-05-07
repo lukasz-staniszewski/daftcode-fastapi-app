@@ -1,0 +1,166 @@
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+    *{
+        margin:0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html{
+        font-size: 10px;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    nav{
+        margin: 15px auto;
+        text-align: right;
+        max-width: 1440px;
+    }
+
+    nav a{
+        display: inline-block;
+        font-size: 2.1rem;
+        text-decoration: none;
+        text-transform: uppercase;
+        height: 52px;
+        padding: 10px;
+        color: black;
+        margin: 0 10px;
+    }
+    nav a:hover{
+        border-bottom: 2px solid black;
+        color: #555;
+    }
+    nav a.meetButton{
+        font-size: 2.4rem;
+        border: 2px solid black;
+        padding: 10px 20px;
+        letter-spacing: 1px;
+        margin-left: 55px;
+        margin-right: 10px;
+        transition: 0.2s;
+    }
+
+    nav a.meetButton:hover{
+        background-color: #555;
+        color:bisque;
+        border-color: #555;
+    }
+
+    header{
+        background-image: url("https://s3.viva.pl/newsy/popek-pawel-mikolajuw-viva-marzec-2018-451350-GALLERY_BIG.jpg");
+        height: 40vh;
+        background-size: cover;
+        transition: 0.1s;
+    }
+    header h1{
+        color:white;
+        text-transform: uppercase;
+        font-size: 4rem;
+        line-height: 40vh;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 60%);
+        text-shadow: 0px 0px black;
+        -webkit-text-stroke: 2px black;
+    }
+    header:hover{
+        background-image: url("https://bilety.gazeta.ie/media/events/event_293.jpg");
+    }
+
+    footer{
+        background-color: black;
+    }
+    footer p{
+        color: white;
+        text-align: center;
+        padding: 1rem 0;
+        font-size: 1.8rem;
+    }
+
+    main p.description{
+        text-align: center;
+        margin: 0 30px 50px 30px;
+        font-size: 1.8rem;
+    }
+
+    main{
+        max-width: 1440px;
+        margin: 5vh auto;
+        font-size: 0;
+    }
+
+    section>div{
+        display: inline-block;
+        width: 33.3%;
+    }
+
+    section div div{
+        height: 200px;
+        background-size: cover;
+        margin: 20px 30px;
+    }
+
+    section div h2{
+        font-size: 2rem;
+        text-align: center;
+        color:#333;
+    }
+
+    .img1{
+        background-image: url("https://static.debica24.eu/data/articles/s4_popek_wystapi_w_modernie_1546379194_2782.jpg");
+    }
+
+    .img2{
+        background-image: url("https://i.wpimg.pl/730x0/m.fitness.wp.pl/3-b3d62e42f84729c0c78019071a74e9.jpg");
+    }
+
+    .img3{
+        background-image: url("https://gfx.radiozet.pl/var/radiozet/storage/images/muzyka/popek-zdjecie-sprzed-20-lat-wygladal-inaczej-foto/771299-1-pol-PL/Popek-na-zdjeciu-sprzed-20-lat.-Tak-wygladal-kiedys!-FOTO_size-360x202.webp");
+    }
+
+
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#">O popku</a>
+        <a href="#">Walki popka</a>
+        <a href="#">Muzyka popka</a>
+        <a href="#" class="meetButton">Umów wizytę</a>
+    </nav>
+    <header>
+        <h1>Popek Monster Szefito 😎</h1>
+    </header>
+    <main>
+        <p class="description">
+            Popek monster słynny piosenkarz i wojownik, dużo się bije na fame mma.
+            Znany ze śmiesznych oczu i dziwnej twarzy. Proszę się nie śmiać bo umówię na spotkanie.
+        </p>
+        <section class="images">
+            <div>
+                <div class="img1"></div>
+                <h2>Popek zły</h2>
+            </div>
+            <div>
+                <div class="img2"></div>
+                <h2>Popek napinka</h2>
+            </div>
+            <div>
+                <div class="img3"></div>
+                <h2>Popek gada przez telefon</h2>
+            </div>  
+        </section>
+
+    </main>
+    <footer>
+        <p>&copy; Popek Monster szef totalny - kizo przegra na fame mma 11 jak coś</p>
+    </footer>
+</body>
+</html>

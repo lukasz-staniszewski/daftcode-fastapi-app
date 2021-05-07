@@ -8,7 +8,7 @@ on:
     branches:
     - main 
     - dev
-    - lekcja3
+    - lekcja4
   pull_request:
     branches: [ main ]
 
