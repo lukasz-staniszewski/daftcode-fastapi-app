@@ -379,5 +379,3 @@ def full_logout(response: Response, format: str = Query(None)):
                 content="<h1>Logged out!</h1>", status_code=status.HTTP_200_OK
             )
     return PlainTextResponse(content="Logged out!", status_code=status.HTTP_200_OK)
-
-
