@@ -157,6 +157,13 @@ async def get_categories(response: Response):
     }
 
 
+def validate_address(x):
+    if x["Address"] and x["PostalCode"] and x["City"] and x["Country"]:
+        return f'{x["Address"]} {x["PostalCode"]} {x["City"]} {x["Country"]}'
+    else:
+        return None
+
+
 @dbrouter.get("/customers")
 async def get_customers(response: Response):
     response.status_code = status.HTTP_200_OK
@@ -166,7 +173,7 @@ async def get_customers(response: Response):
         FROM Customers
         ORDER BY CustomerID
         """).fetchall()
-    customers = [{"id": x["CustomerID"], "name": x["CompanyName"], "full_address": f'{x["Address"]} {x["PostalCode"]} {x["City"]} {x["Country"]}'} for x in customers]
+    customers = [{"id": x["CustomerID"], "name": x["CompanyName"], "full_address": validate_address(x)} for x in customers]
     return {
         "customers": customers,
     }
