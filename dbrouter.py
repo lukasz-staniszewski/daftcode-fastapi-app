@@ -375,12 +375,12 @@ async def put_categories(response: Response, category: CategoryInput, category_i
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Category with such id doesnt exist!",
         )
-    response.status_code = status.HTTP_200_OK
     dbrouter.db_connection.execute(
         "UPDATE Categories SET CategoryName = ? WHERE CategoryID = ?",
         (category.name, category_id),
     )
     dbrouter.db_connection.commit()
+    response.status_code = status.HTTP_200_OK
     return CategoryOutput(id=category_id, name=category.name)
 
 
@@ -395,9 +395,9 @@ async def del_categories(response: Response, category: CategoryInput, category_i
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Category with such id doesnt exist!",
         )
-    response.status_code = status.HTTP_200_OK
     dbrouter.db_connection.execute(
         "DELETE FROM Categories WHERE CategoryID = ?", (category_id,)
     )
     dbrouter.db_connection.commit()
+    response.status_code = status.HTTP_200_OK
     return {"deleted": 1}
