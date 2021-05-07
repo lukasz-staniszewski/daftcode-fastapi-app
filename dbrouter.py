@@ -171,7 +171,6 @@ async def get_customers(response: Response):
     customers = dbrouter.db_connection.execute("""
         SELECT CustomerID, CompanyName, Address, PostalCode, City, Country
         FROM Customers
-        ORDER BY CustomerID
         """).fetchall()
     customers = [{"id": x["CustomerID"], "name": x["CompanyName"], "full_address": validate_address(x)} for x in customers]
     return {
