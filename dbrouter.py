@@ -385,7 +385,7 @@ async def put_categories(response: Response, category: CategoryInput, category_i
 
 
 @dbrouter.delete("/categories/{category_id}")
-async def del_categories(response: Response, category: CategoryInput, category_id: int):
+async def del_categories(response: Response, category_id: int):
     dbrouter.db_connection.row_factory = sqlite3.Row
     cat_check = dbrouter.db_connection.execute(
         f"SELECT CategoryID from Categories WHERE CategoryID = {category_id}"
