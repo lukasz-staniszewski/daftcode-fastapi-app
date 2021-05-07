@@ -314,13 +314,14 @@ async def get_products_orders(response: Response, product_id: int):
     dbrouter.db_connection.row_factory = sqlite3.Row
     ord_id_check = dbrouter.db_connection.execute(
         f"SELECT ProductID from Products WHERE ProductID = {product_id}"
-    )
+    ).fetchone()
     if ord_id_check is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Product with such id doesnt exist!",
         )
     response.status_code = status.HTTP_200_OK
+    dbrouter.db_connection.row_factory = sqlite3.Row
     prod_ord = dbrouter.db_connection.execute(
         """
     SELECT o.OrderID as OrderID, CompanyName, Quantity, ROUND((UnitPrice * Quantity) - (Discount * (UnitPrice * Quantity)),2) as TotalPrice
@@ -328,7 +329,7 @@ async def get_products_orders(response: Response, product_id: int):
     JOIN Customers c USING (CustomerID)
     JOIN "Order Details" od WHERE (od.OrderID = o.OrderID AND od.ProductID = ?) """,
         (product_id,),
-    )
+    ).fetchall()
     prod_ord = [
         {
             "id": x["OrderID"],
@@ -365,7 +366,15 @@ async def check_category_id(category_id):
 
 @dbrouter.put("/categories/{category_id}")
 async def put_categories(response: Response, category: CategoryInput, category_id: int):
-    check_category_id(category_id)
+    dbrouter.db_connection.row_factory = sqlite3.Row
+    cat_check = dbrouter.db_connection.execute(
+        f"SELECT CategoryID from Categories WHERE CategoryID = {category_id}"
+    ).fetchone()
+    if cat_check is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Category with such id doesnt exist!",
+        )
     response.status_code = status.HTTP_200_OK
     dbrouter.db_connection.execute(
         "UPDATE Categories SET CategoryName = ? WHERE CategoryID = ?",
@@ -377,7 +386,15 @@ async def put_categories(response: Response, category: CategoryInput, category_i
 
 @dbrouter.delete("/categories/{category_id}")
 async def del_categories(response: Response, category: CategoryInput, category_id: int):
-    check_category_id(category_id)
+    dbrouter.db_connection.row_factory = sqlite3.Row
+    cat_check = dbrouter.db_connection.execute(
+        f"SELECT CategoryID from Categories WHERE CategoryID = {category_id}"
+    ).fetchone()
+    if cat_check is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Category with such id doesnt exist!",
+        )
     response.status_code = status.HTTP_200_OK
     dbrouter.db_connection.execute(
         "DELETE FROM Categories WHERE CategoryID = ?", (category_id,)
