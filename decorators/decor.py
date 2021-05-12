@@ -1,7 +1,8 @@
+# %%
 from functools import wraps
 import re
 
-
+# %%
 # GREETING DECORATOR
 def greetings(function_orig):
     @wraps(function_orig)
@@ -75,3 +76,11 @@ def add_class_method(ClassName):
         return wrapper
 
     return real_dec
+
+# %%
+@greetings
+def welcome():
+    return "adam sandler"
+# %%
+welcome()
+# %%
