@@ -22,6 +22,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi_mako import FastAPIMako
 from routers.router import router
 from dbrouter import dbrouter
+from ormrouter import ormrouter
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
 
@@ -37,7 +38,8 @@ mako = FastAPIMako(app)
 templates = Jinja2Templates(directory="templates")
 
 app.include_router(router, prefix="/v1", tags=["api_v1"])
-app.include_router(dbrouter, tags=["default"])
+app.include_router(dbrouter, prefix="/db", tags=["sqlite_ver"])
+app.include_router(ormrouter, tags=["default"])
 
 objects = {
     1: {"field_a": "a", "field_b": "b"},
