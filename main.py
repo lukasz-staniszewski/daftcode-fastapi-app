@@ -39,6 +39,8 @@ app.include_router(ormrouter, tags=["default"])
 
 
 templates = Jinja2Templates(directory="templates")
+
+
 @app.get("/", response_class=HTMLResponse)
 def welcome_jinja(request: Request):
     return templates.TemplateResponse(

@@ -77,10 +77,13 @@ def add_class_method(ClassName):
 
     return real_dec
 
+
 # %%
 @greetings
 def welcome():
     return "adam sandler"
+
+
 # %%
 welcome()
 # %%
