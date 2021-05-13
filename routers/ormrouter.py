@@ -97,7 +97,7 @@ async def put_suppliers(
     request: Request,
     response: Response,
     supplier_id: PositiveInt,
-    inp_changes: schemas.SuppliersInput,
+    inp_changes: schemas.SuppliersInputOptional,
     db: Session = Depends(get_db),
 ):
     body = b''
