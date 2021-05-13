@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
 from dblib.database import get_db
 from dblib import crud, schemas, models
 from typing import List
@@ -94,15 +94,20 @@ async def post_supplier(
 
 @ormrouter.put("/suppliers/{supplier_id}", response_model=schemas.SupplierFull)
 async def put_suppliers(
+    request: Request,
     response: Response,
     supplier_id: PositiveInt,
     inp_changes: schemas.SuppliersInput,
     db: Session = Depends(get_db),
 ):
+    body = b''
+    async for chunk in request.stream():
+        body += chunk
+    print(body)
     db_supplier = crud.get_supplier(db, supplier_id)
     if db_supplier is None:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Supplier not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Supplier not found"
         )
     crud.put_suppliers(db, supplier_id, inp_changes)
     response.status_code = status.HTTP_200_OK
