@@ -47,11 +47,11 @@ async def get_supplier_product(
     response: Response, supplier_id: PositiveInt, db: Session = Depends(get_db)
 ):
     db_supplier = crud.get_supplier(db, supplier_id)
-    db_supp_prod = crud.get_suppliers_product(db, supplier_id)
-    if db_supp_prod is None:
+    if db_supplier is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Supplier not found"
         )
+    db_supp_prod = crud.get_suppliers_product(db, supplier_id)
     response.status_code = status.HTTP_200_OK
     db_supp_prod = [
         {
