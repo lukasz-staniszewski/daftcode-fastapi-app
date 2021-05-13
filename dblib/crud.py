@@ -40,3 +40,10 @@ def get_suppliers_product(db: Session, supplier_id: int):
         .order_by(models.Product.ProductID.desc())
         .all()
     )
+
+
+def del_suppliers(db: Session, supplier_id: int):
+    db.query(models.Supplier).filter(
+        models.Supplier.SupplierID == supplier_id
+    ).delete()
+    db.commit()

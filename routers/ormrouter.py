@@ -66,3 +66,16 @@ async def get_supplier_product(
         for row in db_supp_prod
     ]
     return db_supp_prod
+
+
+@ormrouter.delete("/suppliers/{supplier_id}")
+async def del_supplier(
+    supplier_id: PositiveInt, db: Session = Depends(get_db)
+):
+    db_supplier = crud.get_supplier(db, supplier_id)
+    if db_supplier is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Supplier not found"
+        )
+    crud.del_suppliers(db, supplier_id)
+    return Response(status_code = status.HTTP_204_NO_CONTENT)
