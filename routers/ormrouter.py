@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from dblib.database import get_db
-from dblib import crud, schemas
+from dblib import crud, schemas, models
 from typing import List
 from pydantic import PositiveInt
 from sqlalchemy.orm import Session
@@ -68,14 +68,47 @@ async def get_supplier_product(
     return db_supp_prod
 
 
-@ormrouter.delete("/suppliers/{supplier_id}")
-async def del_supplier(
-    supplier_id: PositiveInt, db: Session = Depends(get_db)
+@ormrouter.post("/suppliers")
+async def post_supplier(
+    inp_supp: schemas.SuppliersInput, response: Response, db: Session = Depends(get_db)
 ):
+    print(crud.get_suppliers_maxid(db))
+    new_id = crud.get_suppliers_maxid(db)[0] + 1
+    new_supplier = models.Supplier()
+    new_supplier.SupplierID = new_id
+    new_supplier.CompanyName = inp_supp.CompanyName
+    new_supplier.ContactName = inp_supp.ContactName
+    new_supplier.ContactTitle = inp_supp.ContactTitle
+    new_supplier.Address = inp_supp.Address
+    new_supplier.City = inp_supp.City
+    new_supplier.PostalCode = inp_supp.PostalCode
+    new_supplier.Country = inp_supp.Country
+    new_supplier.Phone = inp_supp.Phone
+    new_supplier.Fax = inp_supp.Fax
+    new_supplier.HomePage = inp_supp.HomePage
+    crud.post_suppliers(db, new_supplier)
+    response.status_code = status.HTTP_201_CREATED
+    return {
+        "SupplierID": new_supplier.SupplierID,
+        "CompanyName": new_supplier.CompanyName,
+        "ContactName": new_supplier.ContactName,
+        "ContactTitle": new_supplier.ContactTitle,
+        "Address": new_supplier.Address,
+        "City": new_supplier.City,
+        "PostalCode": new_supplier.PostalCode,
+        "Country": new_supplier.Country,
+        "Phone": new_supplier.Phone,
+        "Fax": new_supplier.Fax,
+        "HomePage": new_supplier.HomePage,
+    }
+
+
+@ormrouter.delete("/suppliers/{supplier_id}")
+async def del_supplier(supplier_id: PositiveInt, db: Session = Depends(get_db)):
     db_supplier = crud.get_supplier(db, supplier_id)
     if db_supplier is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Supplier not found"
         )
     crud.del_suppliers(db, supplier_id)
-    return Response(status_code = status.HTTP_204_NO_CONTENT)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

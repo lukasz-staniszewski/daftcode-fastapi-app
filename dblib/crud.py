@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-
-from dblib import models
+from sqlalchemy.sql.expression import func
+from dblib import models, schemas
 
 
 def get_shippers(db: Session):
@@ -42,8 +42,15 @@ def get_suppliers_product(db: Session, supplier_id: int):
     )
 
 
-def del_suppliers(db: Session, supplier_id: int):
-    db.query(models.Supplier).filter(
-        models.Supplier.SupplierID == supplier_id
-    ).delete()
+def post_suppliers(db: Session, new_supplier: models.Supplier):
+    db.add(new_supplier)
     db.commit()
+
+
+def del_suppliers(db: Session, supplier_id: int):
+    db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).delete()
+    db.commit()
+
+
+def get_suppliers_maxid(db: Session):
+    return db.query(func.max(models.Supplier.SupplierID)).first()
