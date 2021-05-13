@@ -93,7 +93,12 @@ async def post_supplier(
 
 
 @ormrouter.put("/suppliers/{supplier_id}", response_model=schemas.SupplierFull)
-async def put_suppliers(response: Response, supplier_id: PositiveInt, inp_changes: schemas.SuppliersInput, db: Session = Depends(get_db)):
+async def put_suppliers(
+    response: Response,
+    supplier_id: PositiveInt,
+    inp_changes: schemas.SuppliersInput,
+    db: Session = Depends(get_db),
+):
     db_supplier = crud.get_supplier(db, supplier_id)
     if db_supplier is None:
         raise HTTPException(

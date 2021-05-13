@@ -43,14 +43,17 @@ def get_suppliers_product(db: Session, supplier_id: int):
 
 
 def post_suppliers(db: Session, new_supplier: models.Supplier):
-    db.query(models.Supplier).insert(values=)
     db.add(new_supplier)
     db.commit()
 
 
-def put_suppliers(db: Session, supplier_id: int, modified_things: schemas.SuppliersInput):
+def put_suppliers(
+    db: Session, supplier_id: int, modified_things: schemas.SuppliersInput
+):
     dict_of_changes = {k: v for k, v in dict(modified_things).items() if v is not None}
-    db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update(values=dict_of_changes)
+    db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update(
+        values=dict_of_changes
+    )
     db.commit()
 
 
