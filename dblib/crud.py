@@ -36,6 +36,7 @@ def get_suppliers_product(db: Session, supplier_id: int):
         )
         .join(models.Supplier, models.Supplier.SupplierID == models.Product.SupplierID)
         .join(models.Category, models.Category.CategoryID == models.Product.CategoryID)
+        .filter(models.Product.SupplierID == supplier_id)
         .order_by(models.Product.ProductID.desc())
         .all()
     )
