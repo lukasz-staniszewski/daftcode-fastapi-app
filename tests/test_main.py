@@ -55,7 +55,9 @@ def test_auth():
 
 def test_patient():
     date_today = date.today()
-    response_post = client.post("/v1/register/", json={"name": "Jan", "surname": "Nowak"})
+    response_post = client.post(
+        "/v1/register/", json={"name": "Jan", "surname": "Nowak"}
+    )
     assert response_post.status_code == 201
     date_then = date_today + timedelta(days=8)
 
@@ -107,7 +109,9 @@ def test_register():
         "vaccination_date": f"{date_then}",
     }
 
-    response = client.post("/v1/register/", json={"name": "Marcin", "surname": "Najman"})
+    response = client.post(
+        "/v1/register/", json={"name": "Marcin", "surname": "Najman"}
+    )
     assert response.status_code == 201
     date_then = date_today + timedelta(days=12)
     assert response.json() == {
