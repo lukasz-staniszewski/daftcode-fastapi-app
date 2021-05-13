@@ -8,58 +8,60 @@ client = TestClient(app)
 
 @pytest.mark.parametrize("name", ["Zenek", "Marek", "Alojzy Niezdąży"])
 def test_hello_name(name):
-    response = client.get(f"/hello/{name}")
+    response = client.get(f"/v1/hello/{name}")
     assert response.status_code == 200
     assert response.json() == {"msg": f"Hello {name}"}
 
 
 def test_methods():
-    responseget = client.get("/method")
+    responseget = client.get("/v1/method")
     assert responseget.status_code == 200
     assert responseget.json() == {"method": "GET"}
 
-    responseput = client.put("/method")
+    responseput = client.put("/v1/method")
     assert responseput.status_code == 200
     assert responseput.json() == {"method": "PUT"}
 
-    responsepost = client.post("/method")
+    responsepost = client.post("/v1/method")
     assert responsepost.status_code == 201
     assert responsepost.json() == {"method": "POST"}
 
-    responsedelete = client.delete("/method")
+    responsedelete = client.delete("/v1/method")
     assert responsedelete.status_code == 200
     assert responsedelete.json() == {"method": "DELETE"}
 
-    responseoptions = client.options("/method")
+    responseoptions = client.options("/v1/method")
     assert responseoptions.status_code == 200
     assert responseoptions.json() == {"method": "OPTIONS"}
 
 
 def test_auth():
     response = client.get(
-        "/auth/?password=haslo&password_hash=013c6889f799cd986a735118e1888727d1435f7f623d05d58c61bf2cd8b49ac90105e5786ceaabd62bbc27336153d0d316b2d13b36804080c44aa6198c533215"
+        "/v1/auth/?password=haslo&password_hash=013c6889f799cd986a735118e1888727d1435f7f623d05d58c61bf2cd8b49ac90105e5786ceaabd62bbc27336153d0d316b2d13b36804080c44aa6198c533215"
     )
     assert response.status_code == 204
 
     response = client.get(
-        "/auth/?password=haslo&password_hash=f34ad4b3ae1e2cf33092e2abb60dc0444781c15d0e2e9ecdb37e4b14176a0164027b05900e09fa0f61a1882e0b89fbfa5dcfcc9765dd2ca4377e2c794837e091"
+        "/v1/auth/?password=haslo&password_hash=f34ad4b3ae1e2cf33092e2abb60dc0444781c15d0e2e9ecdb37e4b14176a0164027b05900e09fa0f61a1882e0b89fbfa5dcfcc9765dd2ca4377e2c794837e091"
     )
     assert response.status_code == 401
 
-    response = client.get("/auth/?password=" "&password_hash=" "")
+    response = client.get("/v1/auth/?password=" "&password_hash=" "")
     assert response.status_code == 401
 
-    response = client.get("/auth")
+    response = client.get("/v1/auth")
     assert response.status_code == 401
 
 
 def test_patient():
     date_today = date.today()
-    response_post = client.post("/register/", json={"name": "Jan", "surname": "Nowak"})
+    response_post = client.post(
+        "/v1/register/", json={"name": "Jan", "surname": "Nowak"}
+    )
     assert response_post.status_code == 201
     date_then = date_today + timedelta(days=8)
 
-    response_get = client.get("/patient/1")
+    response_get = client.get("/v1/patient/1")
     assert response_get.status_code == 200
     assert response_get.json() == {
         "id": 1,
@@ -69,18 +71,18 @@ def test_patient():
         "vaccination_date": f"{date_then}",
     }
 
-    response_get2 = client.get("/patient/2")
+    response_get2 = client.get("/v1/patient/2")
     assert response_get2.status_code == 404
 
-    response_get3 = client.get("patient/-1")
+    response_get3 = client.get("/v1/patient/-1")
     assert response_get3.status_code == 400
 
     response_post2 = client.post(
-        "/register/", json={"name": "Lukasz", "surname": "1231231"}
+        "/v1/register/", json={"name": "Lukasz", "surname": "1231231"}
     )
     assert response_post2.status_code == 201
 
-    response_get4 = client.get("/patient/2")
+    response_get4 = client.get("/v1/patient/2")
     assert response_get4.status_code == 200
     date_then = date_today + timedelta(days=6)
     assert response_get4.json() == {
@@ -95,7 +97,7 @@ def test_patient():
 def test_register():
     date_today = date.today()
     response = client.post(
-        "/register/", json={"name": "Łukasz", "surname": "Staniszewski"}
+        "/v1/register/", json={"name": "Łukasz", "surname": "Staniszewski"}
     )
     assert response.status_code == 201
     date_then = date_today + timedelta(days=18)
@@ -107,7 +109,9 @@ def test_register():
         "vaccination_date": f"{date_then}",
     }
 
-    response = client.post("/register/", json={"name": "Marcin", "surname": "Najman"})
+    response = client.post(
+        "/v1/register/", json={"name": "Marcin", "surname": "Najman"}
+    )
     assert response.status_code == 201
     date_then = date_today + timedelta(days=12)
     assert response.json() == {
@@ -119,7 +123,7 @@ def test_register():
     }
 
     response = client.post(
-        "/register/", json={"name": "Krzysztof", "surname": "Kolumb"}
+        "/v1/register/", json={"name": "Krzysztof", "surname": "Kolumb"}
     )
     assert response.status_code == 201
     date_then = date_today + timedelta(days=15)
@@ -132,7 +136,7 @@ def test_register():
     }
 
     response = client.post(
-        "/register/", json={"name": "Krzysztof", "surname": "Kolumb"}
+        "/v1/register/", json={"name": "Krzysztof", "surname": "Kolumb"}
     )
     assert response.status_code == 201
     date_then = date_today + timedelta(days=15)

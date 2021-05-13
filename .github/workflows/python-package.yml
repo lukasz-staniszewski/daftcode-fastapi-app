@@ -6,9 +6,8 @@ name: Python fast api
 on:
   push:
     branches:
-    - main 
-    - dev
-    - lekcja4
+    - main
+    - lekcja5
   pull_request:
     branches: [ main ]
 

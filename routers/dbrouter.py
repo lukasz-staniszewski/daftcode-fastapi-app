@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import sqlite3
 from pydantic import BaseModel
+import os
 
 
 class Customer(BaseModel):
@@ -25,7 +26,9 @@ class CategoryOutput(BaseModel):
 dbrouter = APIRouter()
 dbrouter.__name__ = "DataBase app!"
 templates = Jinja2Templates(directory="templates")
-db_path = "northwind.db"
+
+db_path = os.path.abspath(os.getcwd()) + "/db/northwind.db"
+print(db_path)
 
 
 @dbrouter.get("/", response_class=HTMLResponse)
@@ -136,7 +139,7 @@ async def artists_add(shipper_id: int, shipper: Shipper):
     )
     dbrouter.db_connection.commit()
 
-    app.db_connection.row_factory = sqlite3.Row
+    dbrouter.db_connection.row_factory = sqlite3.Row
     data = dbrouter.db_connection.execute(
         """SELECT ShipperID AS shipper_id, CompanyName AS company_name
          FROM Shippers WHERE ShipperID = ?""",
@@ -395,9 +398,9 @@ async def del_categories(response: Response, category_id: int):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Category with such id doesnt exist!",
         )
-    dbrouter.db_connection.execute(
+    cursor = dbrouter.db_connection.execute(
         "DELETE FROM Categories WHERE CategoryID = ?", (category_id,)
     )
     dbrouter.db_connection.commit()
     response.status_code = status.HTTP_200_OK
-    return {"deleted": 1}
+    return {"deleted": cursor.rowcount}
