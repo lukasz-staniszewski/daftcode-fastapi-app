@@ -108,7 +108,7 @@ async def del_supplier(supplier_id: PositiveInt, db: Session = Depends(get_db)):
     db_supplier = crud.get_supplier(db, supplier_id)
     if db_supplier is None:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Supplier not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Supplier not found"
         )
     crud.del_suppliers(db, supplier_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
