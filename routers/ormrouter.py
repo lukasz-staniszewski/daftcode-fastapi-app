@@ -68,7 +68,7 @@ async def get_supplier_product(
     return db_supp_prod
 
 
-@ormrouter.post("/suppliers")
+@ormrouter.post("/suppliers", response_model=schemas.SupplierFull)
 async def post_supplier(
     inp_supp: schemas.SuppliersInput, response: Response, db: Session = Depends(get_db)
 ):
@@ -88,19 +88,21 @@ async def post_supplier(
     new_supplier.HomePage = inp_supp.HomePage
     crud.post_suppliers(db, new_supplier)
     response.status_code = status.HTTP_201_CREATED
-    return {
-        "SupplierID": new_supplier.SupplierID,
-        "CompanyName": new_supplier.CompanyName,
-        "ContactName": new_supplier.ContactName,
-        "ContactTitle": new_supplier.ContactTitle,
-        "Address": new_supplier.Address,
-        "City": new_supplier.City,
-        "PostalCode": new_supplier.PostalCode,
-        "Country": new_supplier.Country,
-        "Phone": new_supplier.Phone,
-        "Fax": new_supplier.Fax,
-        "HomePage": new_supplier.HomePage,
-    }
+    db_supplier = crud.get_supplier(db, new_supplier.SupplierID)
+    return db_supplier
+
+
+@ormrouter.put("/suppliers/{supplier_id}", response_model=schemas.SupplierFull)
+async def put_suppliers(response: Response, supplier_id: PositiveInt, inp_changes: schemas.SuppliersInput, db: Session = Depends(get_db)):
+    db_supplier = crud.get_supplier(db, supplier_id)
+    if db_supplier is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Supplier not found"
+        )
+    crud.put_suppliers(db, supplier_id, inp_changes)
+    response.status_code = status.HTTP_200_OK
+    db_supplier = crud.get_supplier(db, supplier_id)
+    return db_supplier
 
 
 @ormrouter.delete("/suppliers/{supplier_id}")

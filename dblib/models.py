@@ -25,7 +25,6 @@ class Category(Base):
     CategoryID = Column(
         SmallInteger,
         primary_key=True,
-        server_default=text("nextval('categories_categoryid_seq'::regclass)"),
     )
     CategoryName = Column(String(15), nullable=False)
     Description = Column(Text)
@@ -45,9 +44,6 @@ class Customerdemographic(Base):
     CustomerTypeID = Column(
         CHAR(6),
         primary_key=True,
-        server_default=text(
-            "nextval('customerdemographics_customertypeid_seq'::regclass)"
-        ),
     )
     CustomerDesc = Column(Text)
 
@@ -74,7 +70,6 @@ class Employee(Base):
     EmployeeID = Column(
         SmallInteger,
         primary_key=True,
-        server_default=text("nextval('employees_employeeid_seq'::regclass)"),
     )
     LastName = Column(String(20), nullable=False)
     FirstName = Column(String(10), nullable=False)
@@ -118,7 +113,6 @@ class Order(Base):
     OrderID = Column(
         SmallInteger,
         primary_key=True,
-        server_default=text("nextval('orders_orderid_seq'::regclass)"),
     )
     CustomerID = Column(CHAR(6))
     EmployeeID = Column(SmallInteger)
@@ -141,7 +135,6 @@ class Product(Base):
     ProductID = Column(
         SmallInteger,
         primary_key=True,
-        server_default=text("nextval('products_productid_seq'::regclass)"),
     )
     ProductName = Column(String(40), nullable=False)
     SupplierID = Column(SmallInteger)
@@ -160,7 +153,6 @@ class Region(Base):
     RegionID = Column(
         SmallInteger,
         primary_key=True,
-        server_default=text("nextval('region_regionid_seq'::regclass)"),
     )
     RegionDescription = Column(CHAR(8), nullable=False)
 
@@ -171,7 +163,6 @@ class Shipper(Base):
     ShipperID = Column(
         SmallInteger,
         primary_key=True,
-        server_default=text("nextval('shippers_tmp_shipperid_seq'::regclass)"),
     )
     CompanyName = Column(String(40), nullable=False)
     Phone = Column(String(24))
@@ -183,7 +174,6 @@ class ShippersTmp(Base):
     ShipperID = Column(
         SmallInteger,
         primary_key=True,
-        server_default=text("nextval('shippers_tmp_shipperid_seq'::regclass)"),
     )
     CompanyName = Column(String(40), nullable=False)
     Phone = Column(String(24))
@@ -212,7 +202,6 @@ class Territory(Base):
     TerritoryID = Column(
         String(20),
         primary_key=True,
-        server_default=text("nextval('territories_territoryid_seq'::regclass)"),
     )
     TerritoryDescription = Column(CHAR(64), nullable=False)
     RegionID = Column(SmallInteger, nullable=False)
@@ -225,7 +214,6 @@ t_usstates = Table(
         "StateID",
         SmallInteger,
         nullable=False,
-        server_default=text("nextval('usstates_stateid_seq'::regclass)"),
     ),
     Column("StateName", String(100)),
     Column("StateAbbr", String(2)),
