@@ -1,7 +1,7 @@
-from pydantic import BaseModel, PositiveInt, constr
-from typing import Union
+from pydantic import BaseModel, PositiveInt, constr, fields
+from typing import Union, Dict, Optional
 
-NullableStr = Union[ constr(max_length=100), None]
+NullableStr = Union[constr(max_length=100), None]
 
 
 class Shipper(BaseModel):
@@ -20,6 +20,7 @@ class Supplier(BaseModel):
     class Config:
         orm_mode = True
 
+
 class SupplierFull(BaseModel):
     SupplierID: PositiveInt
     CompanyName: constr(max_length=40)
@@ -33,6 +34,6 @@ class SupplierFull(BaseModel):
     Phone: constr(max_length=24)
     Fax: NullableStr
     HomePage: NullableStr
-    
+
     class Config:
         orm_mode = True

@@ -19,5 +19,23 @@ def get_suppliers(db: Session):
 
 def get_supplier(db: Session, supplier_id: int):
     return (
-        db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).first()
+        db.query(models.Supplier)
+        .filter(models.Supplier.SupplierID == supplier_id)
+        .first()
+    )
+
+
+def get_suppliers_product(db: Session, supplier_id: int):
+    return (
+        db.query(
+            models.Product.ProductName,
+            models.Product.ProductID,
+            models.Category.CategoryID,
+            models.Category.CategoryName,
+            models.Product.Discontinued,
+        )
+        .join(models.Supplier, models.Supplier.SupplierID == models.Product.SupplierID)
+        .join(models.Category, models.Category.CategoryID == models.Product.CategoryID)
+        .order_by(models.Product.ProductID.desc())
+        .all()
     )
