@@ -54,6 +54,8 @@ class SuppliersInput(BaseModel):
 
     class Config:
         orm_mode = True
+
+
 class SuppliersInputOptional(BaseModel):
     CompanyName: Optional[constr(max_length=40)]
     ContactName: Optional[constr(max_length=30)]

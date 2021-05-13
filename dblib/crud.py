@@ -51,10 +51,11 @@ def put_suppliers(
     db: Session, supplier_id: int, modified_things: schemas.SuppliersInput
 ):
     dict_of_changes = {k: v for k, v in dict(modified_things).items() if v is not None}
-    db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update(
-        values=dict_of_changes
-    )
-    db.commit()
+    if dict_of_changes:
+        db.query(models.Supplier).filter(
+            models.Supplier.SupplierID == supplier_id
+        ).update(values=dict_of_changes)
+        db.commit()
 
 
 def del_suppliers(db: Session, supplier_id: int):

@@ -100,10 +100,6 @@ async def put_suppliers(
     inp_changes: schemas.SuppliersInputOptional,
     db: Session = Depends(get_db),
 ):
-    body = b''
-    async for chunk in request.stream():
-        body += chunk
-    print(body)
     db_supplier = crud.get_supplier(db, supplier_id)
     if db_supplier is None:
         raise HTTPException(
