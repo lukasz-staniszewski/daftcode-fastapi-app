@@ -22,7 +22,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi_mako import FastAPIMako
 from routers.router import router
 from routers.dbrouter import dbrouter
-from ormrouter import ormrouter
+from routers.ormrouter import ormrouter
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
 
