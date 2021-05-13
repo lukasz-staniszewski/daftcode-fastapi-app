@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from dblib.database import get_db
 from dblib import crud, schemas
 from typing import List
@@ -21,3 +21,19 @@ async def get_shipper(shipper_id: PositiveInt, db: Session = Depends(get_db)):
 @ormrouter.get("/shippers", response_model=List[schemas.Shipper])
 async def get_shippers(db: Session = Depends(get_db)):
     return crud.get_shippers(db)
+
+
+@ormrouter.get("/suppliers", response_model=List[schemas.Supplier])
+async def get_suppliers(response: Response, db: Session = Depends(get_db)):
+    response.status_code = status.HTTP_200_OK
+    return crud.get_suppliers(db)
+
+
+@ormrouter.get("/suppliers/{supplier_id}", response_model=schemas.SupplierFull)
+async def get_supplier(response: Response, supplier_id: PositiveInt, db: Session = Depends(get_db)):
+    db_supplier = crud.get_supplier(db, supplier_id)
+    if db_supplier is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Supplier not found")
+    response.status_code = status.HTTP_200_OK
+    return db_supplier
+
