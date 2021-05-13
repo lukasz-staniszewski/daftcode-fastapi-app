@@ -1,5 +1,5 @@
 import unittest
-from decor import (
+from decorators.decor import (
     greetings,
     is_palindrome,
     format_output,
