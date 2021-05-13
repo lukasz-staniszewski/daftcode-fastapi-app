@@ -34,9 +34,10 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    # - name: Test with pytest
-    #   run: |
-    #     pytest
+    - name: Test with pytest
+      run: |
+        export SQLALCHEMY_DATABASE_URL="postgresql://jzgouqidncjsfg:2d818c796078f06401b87fe0c2e4b50b4dd31484bfedb84d127ea4c6fdb7d0d2@ec2-54-74-60-70.eu-west-1.compute.amazonaws.com:5432/d9j91k8u8af364"
+        pytest
     - name: Test decorators with unittest
       run: |
         cd decorators
