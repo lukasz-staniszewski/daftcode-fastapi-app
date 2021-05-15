@@ -100,7 +100,9 @@ async def del_supplier(supplier_id: PositiveInt, db: Session = Depends(get_db)):
 
 @ormrouter.post("/suppliers", response_model=schemas.SupplierFull)
 async def post_supplier(
-    inp_supp: schemas.SuppliersPostInput, response: Response, db: Session = Depends(get_db)
+    inp_supp: schemas.SuppliersPostInput,
+    response: Response,
+    db: Session = Depends(get_db),
 ):
     new_id = crud.get_suppliers_maxid(db)[0] + 1
     inp_supp.SupplierID = new_id

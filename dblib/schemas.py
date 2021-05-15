@@ -55,6 +55,7 @@ class SuppliersInputOptional(BaseModel):
     class Config:
         orm_mode = True
 
+
 class SuppliersPostInput(BaseModel):
     SupplierID: Optional[PositiveInt]
     CompanyName: constr(max_length=40)
