@@ -48,7 +48,7 @@ def post_suppliers(db: Session, new_supplier: models.Supplier):
 
 
 def put_suppliers(
-    db: Session, supplier_id: int, modified_things: schemas.SuppliersInput
+    db: Session, supplier_id: int, modified_things: schemas.SuppliersInputOptional
 ):
     dict_of_changes = {k: v for k, v in dict(modified_things).items() if v is not None}
     if dict_of_changes:
