@@ -68,30 +68,6 @@ async def get_supplier_product(
     return db_supp_prod
 
 
-@ormrouter.post("/suppliers", response_model=schemas.SupplierFull)
-async def post_supplier(
-    inp_supp: schemas.SuppliersInput, response: Response, db: Session = Depends(get_db)
-):
-    print(crud.get_suppliers_maxid(db))
-    new_id = crud.get_suppliers_maxid(db)[0] + 1
-    new_supplier = models.Supplier()
-    new_supplier.SupplierID = new_id
-    new_supplier.CompanyName = inp_supp.CompanyName
-    new_supplier.ContactName = inp_supp.ContactName
-    new_supplier.ContactTitle = inp_supp.ContactTitle
-    new_supplier.Address = inp_supp.Address
-    new_supplier.City = inp_supp.City
-    new_supplier.PostalCode = inp_supp.PostalCode
-    new_supplier.Country = inp_supp.Country
-    new_supplier.Phone = inp_supp.Phone
-    new_supplier.Fax = inp_supp.Fax
-    new_supplier.HomePage = inp_supp.HomePage
-    crud.post_suppliers(db, new_supplier)
-    response.status_code = status.HTTP_201_CREATED
-    db_supplier = crud.get_supplier(db, new_supplier.SupplierID)
-    return db_supplier
-
-
 @ormrouter.put("/suppliers/{supplier_id}", response_model=schemas.SupplierFull)
 async def put_suppliers(
     request: Request,
@@ -120,3 +96,15 @@ async def del_supplier(supplier_id: PositiveInt, db: Session = Depends(get_db)):
         )
     crud.del_suppliers(db, supplier_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@ormrouter.post("/suppliers", response_model=schemas.SupplierFull)
+async def post_supplier(
+    inp_supp: schemas.SuppliersPostInput, response: Response, db: Session = Depends(get_db)
+):
+    new_id = crud.get_suppliers_maxid(db)[0] + 1
+    inp_supp.SupplierID = new_id
+    crud.post_suppliers(db, models.Supplier(**dict(inp_supp)))
+    response.status_code = status.HTTP_201_CREATED
+    db_supplier = crud.get_supplier(db, inp_supp.SupplierID)
+    return db_supplier
